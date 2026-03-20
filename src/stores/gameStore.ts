@@ -2,9 +2,10 @@
  * gameStore.ts
  *
  * Zustand store managing all game state: players, scores, turns, and undo history.
- * Persists active game to localStorage so it survives page refreshes.
+ * Scoring accumulates during a turn; the player presses "Next" to commit.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-20 — added pending score accumulation + commitTurn
  */
 
 import { create } from 'zustand';
@@ -26,10 +27,16 @@ interface GameStore {
   actions: GameAction[];
   undoStack: UndoEntry[];
 
+  // Pending turn state (accumulated before committing)
+  pendingScore: number;
+  pendingBonusCount: number;
+
   // Actions
   startGame: (playerSetups: { name: string; color: string }[]) => void;
-  addScore: (points: number) => void;
+  addPoints: (points: number) => void;
   addPerfectLine: () => void;
+  subtractPoints: (points: number) => void;
+  commitTurn: () => void;
   skipTurn: () => void;
   undo: () => void;
   endGame: (bonusPlayerId?: string) => void;
@@ -50,6 +57,8 @@ export const useGameStore = create<GameStore>()(
       endGameBonusPlayerId: null,
       actions: [],
       undoStack: [],
+      pendingScore: 0,
+      pendingBonusCount: 0,
 
       hasActiveGame: () => {
         const state = get();
@@ -77,16 +86,42 @@ export const useGameStore = create<GameStore>()(
           endGameBonusPlayerId: null,
           actions: [],
           undoStack: [],
+          pendingScore: 0,
+          pendingBonusCount: 0,
         });
       },
 
-      addScore: (points) => {
+      addPoints: (points) => {
+        const state = get();
+        if (state.isFinished) return;
+        set({ pendingScore: state.pendingScore + points });
+      },
+
+      addPerfectLine: () => {
+        const state = get();
+        if (state.isFinished) return;
+        set({
+          pendingScore: state.pendingScore + PERFECT_LINE_POINTS,
+          pendingBonusCount: state.pendingBonusCount + 1,
+        });
+      },
+
+      subtractPoints: (points) => {
+        const state = get();
+        if (state.isFinished) return;
+        set({ pendingScore: Math.max(0, state.pendingScore - points) });
+      },
+
+      commitTurn: () => {
         const state = get();
         if (state.isFinished || state.players.length === 0) return;
 
         const player = state.players[state.currentPlayerIndex];
+        const points = state.pendingScore;
+        const bonuses = state.pendingBonusCount;
+
         const action: GameAction = {
-          type: 'ADD_SCORE',
+          type: bonuses > 0 ? 'PERFECT_LINE' : 'ADD_SCORE',
           playerId: player.id,
           points,
           timestamp: new Date().toISOString(),
@@ -109,50 +144,11 @@ export const useGameStore = create<GameStore>()(
         set({
           players: state.players.map((p) =>
             p.id === player.id
-              ? { ...p, score: p.score + points, turnScores: [...p.turnScores, points] }
-              : p
-          ),
-          currentPlayerIndex: nextPlayerIndex,
-          turnNumber: nextTurn,
-          actions: [...state.actions, action],
-          undoStack: [...state.undoStack, undoEntry],
-        });
-      },
-
-      addPerfectLine: () => {
-        const state = get();
-        if (state.isFinished || state.players.length === 0) return;
-
-        const player = state.players[state.currentPlayerIndex];
-        const action: GameAction = {
-          type: 'PERFECT_LINE',
-          playerId: player.id,
-          points: PERFECT_LINE_POINTS,
-          timestamp: new Date().toISOString(),
-        };
-
-        const undoEntry: UndoEntry = {
-          action,
-          previousState: {
-            playerScore: player.score,
-            playerBonusCount: player.bonusCount,
-            playerTurnScores: [...player.turnScores],
-            currentPlayerIndex: state.currentPlayerIndex,
-            turnNumber: state.turnNumber,
-          },
-        };
-
-        const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
-        const nextTurn = nextPlayerIndex === 0 ? state.turnNumber + 1 : state.turnNumber;
-
-        set({
-          players: state.players.map((p) =>
-            p.id === player.id
               ? {
                   ...p,
-                  score: p.score + PERFECT_LINE_POINTS,
-                  bonusCount: p.bonusCount + 1,
-                  turnScores: [...p.turnScores, PERFECT_LINE_POINTS],
+                  score: p.score + points,
+                  bonusCount: p.bonusCount + bonuses,
+                  turnScores: [...p.turnScores, points],
                 }
               : p
           ),
@@ -160,6 +156,8 @@ export const useGameStore = create<GameStore>()(
           turnNumber: nextTurn,
           actions: [...state.actions, action],
           undoStack: [...state.undoStack, undoEntry],
+          pendingScore: 0,
+          pendingBonusCount: 0,
         });
       },
 
@@ -197,6 +195,8 @@ export const useGameStore = create<GameStore>()(
           turnNumber: nextTurn,
           actions: [...state.actions, action],
           undoStack: [...state.undoStack, undoEntry],
+          pendingScore: 0,
+          pendingBonusCount: 0,
         });
       },
 
@@ -222,6 +222,8 @@ export const useGameStore = create<GameStore>()(
           turnNumber: previousState.turnNumber,
           actions: state.actions.slice(0, -1),
           undoStack: state.undoStack.slice(0, -1),
+          pendingScore: 0,
+          pendingBonusCount: 0,
         });
       },
 
@@ -233,6 +235,8 @@ export const useGameStore = create<GameStore>()(
         const updates: Partial<GameStore> = {
           isFinished: true,
           finishedAt: now,
+          pendingScore: 0,
+          pendingBonusCount: 0,
         };
 
         if (bonusPlayerId) {
@@ -264,6 +268,8 @@ export const useGameStore = create<GameStore>()(
           endGameBonusPlayerId: null,
           actions: [],
           undoStack: [],
+          pendingScore: 0,
+          pendingBonusCount: 0,
         });
       },
     }),

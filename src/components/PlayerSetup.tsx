@@ -26,7 +26,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
   const [playerCount, setPlayerCount] = useState(2);
   const [players, setPlayers] = useState<PlayerConfig[]>(
     Array.from({ length: MAX_PLAYERS }, (_, i) => ({
-      name: `Player ${i + 1}`,
+      name: '',
       color: PLAYER_COLORS[i].hex,
     }))
   );
@@ -40,7 +40,10 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
   const usedColors = players.slice(0, playerCount).map((p) => p.color);
 
   const handleStart = () => {
-    const activePlayers = players.slice(0, playerCount);
+    const activePlayers = players.slice(0, playerCount).map((p, i) => ({
+      ...p,
+      name: p.name.trim() || `Player ${i + 1}`,
+    }));
     startGame(activePlayers);
     router.push('/game');
   };
@@ -95,9 +98,12 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
               type="text"
               value={players[i].name}
               onChange={(e) => updatePlayer(i, { name: e.target.value })}
+              onFocus={(e) => e.target.select()}
+              autoFocus={i === 0}
               className="flex-1 bg-transparent text-lg font-semibold outline-none placeholder:text-foreground/30 min-w-0"
               placeholder={`Player ${i + 1}`}
               maxLength={16}
+              enterKeyHint="next"
             />
             <div className="flex gap-1.5 shrink-0">
               {PLAYER_COLORS.map((c) => {
