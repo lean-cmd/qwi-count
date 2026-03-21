@@ -12,6 +12,7 @@
 import { motion } from 'framer-motion';
 import { useGameStore } from '@/stores/gameStore';
 import { Star } from 'lucide-react';
+import TileShapeIcon from '@/components/TileShapeIcon';
 
 export default function ScoreBoard() {
   const players = useGameStore((s) => s.players);
@@ -32,10 +33,7 @@ export default function ScoreBoard() {
               borderLeft: isActive ? `4px solid ${player.color}` : '4px solid transparent',
             }}
           >
-            <div
-              className="w-8 h-8 rounded-full shrink-0"
-              style={{ backgroundColor: player.color }}
-            />
+            <TileShapeIcon shape={player.shape} color={player.color} size={32} className="shrink-0" />
             <span className="font-bold text-lg flex-1 truncate">{player.name}</span>
             <div className="flex items-center gap-1 mr-1">
               {Array.from({ length: player.bonusCount }, (_, i) => (

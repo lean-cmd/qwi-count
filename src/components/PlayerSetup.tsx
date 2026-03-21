@@ -1,33 +1,45 @@
 /**
  * PlayerSetup.tsx
  *
- * Modal/inline component for setting up 2-4 players with names and colors.
+ * Modal/inline component for setting up 2-4 players with names, colors, and shapes.
+ * Each player gets a random tile shape assigned on mount.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-20 — added random tile shape assignment
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Minus, Plus, Play } from 'lucide-react';
-import { PLAYER_COLORS, MIN_PLAYERS, MAX_PLAYERS } from '@/lib/constants';
+import { PLAYER_COLORS, MIN_PLAYERS, MAX_PLAYERS, TILE_SHAPES } from '@/lib/constants';
 import { useGameStore } from '@/stores/gameStore';
 import { useRouter } from 'next/navigation';
+import type { TileShape } from '@/types';
+import TileShapeIcon from '@/components/TileShapeIcon';
 
 interface PlayerConfig {
   name: string;
   color: string;
+  shape: TileShape;
 }
 
 export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
   const router = useRouter();
   const startGame = useGameStore((s) => s.startGame);
   const [playerCount, setPlayerCount] = useState(2);
+
+  // Shuffle shapes once on mount so each player gets a unique random shape
+  const shuffledShapes = useMemo(() => {
+    return [...TILE_SHAPES].sort(() => Math.random() - 0.5);
+  }, []);
+
   const [players, setPlayers] = useState<PlayerConfig[]>(
     Array.from({ length: MAX_PLAYERS }, (_, i) => ({
       name: '',
       color: PLAYER_COLORS[i].hex,
+      shape: shuffledShapes[i % shuffledShapes.length],
     }))
   );
 
@@ -80,7 +92,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
         </div>
       </div>
 
-      {/* Player name + color inputs */}
+      {/* Player name + shape + color inputs */}
       <div className="space-y-3">
         {Array.from({ length: playerCount }, (_, i) => (
           <motion.div
@@ -90,9 +102,11 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
             transition={{ delay: i * 0.05 }}
             className="flex items-center gap-3 bg-surface rounded-2xl p-3"
           >
-            <div
-              className="w-10 h-10 rounded-full shrink-0"
-              style={{ backgroundColor: players[i].color }}
+            <TileShapeIcon
+              shape={players[i].shape}
+              color={players[i].color}
+              size={40}
+              className="shrink-0"
             />
             <input
               type="text"

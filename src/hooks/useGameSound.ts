@@ -82,18 +82,33 @@ export function useGameSound() {
     if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume();
 
-    // Celebratory ascending fanfare
+    // Fun celebratory fanfare — ascending arpeggio with harmonics
     const notes = [
-      { freq: 523.25, time: 0,    dur: 0.15 },  // C5
-      { freq: 659.25, time: 0.1,  dur: 0.15 },  // E5
-      { freq: 783.99, time: 0.2,  dur: 0.15 },  // G5
-      { freq: 1046.5, time: 0.35, dur: 0.4 },   // C6 (long)
+      { freq: 523.25, time: 0,    dur: 0.18 },  // C5
+      { freq: 659.25, time: 0.09, dur: 0.18 },  // E5
+      { freq: 783.99, time: 0.18, dur: 0.18 },  // G5
+      { freq: 1046.5, time: 0.30, dur: 0.18 },  // C6
+      { freq: 1318.5, time: 0.42, dur: 0.25 },  // E6
+      { freq: 1568.0, time: 0.55, dur: 0.5 },   // G6 (long, triumphant)
     ];
 
     notes.forEach(({ freq, time, dur }) => {
-      playTone(ctx, freq, dur, 0.25, 'sine', time);
-      // Add a subtle triangle layer for richness
-      playTone(ctx, freq * 1.002, dur, 0.1, 'triangle', time);
+      playTone(ctx, freq, dur, 0.22, 'sine', time);
+      playTone(ctx, freq * 1.002, dur, 0.08, 'triangle', time);
+      // Octave shimmer on the last two notes
+      if (freq > 1200) {
+        playTone(ctx, freq * 2, dur * 0.6, 0.04, 'sine', time + 0.02);
+      }
+    });
+
+    // Sparkly descending tail
+    const sparkle = [
+      { freq: 2093, time: 0.75, dur: 0.1 },
+      { freq: 1760, time: 0.82, dur: 0.1 },
+      { freq: 2349, time: 0.88, dur: 0.15 },
+    ];
+    sparkle.forEach(({ freq, time, dur }) => {
+      playTone(ctx, freq, dur, 0.06, 'sine', time);
     });
   }, [soundEnabled]);
 

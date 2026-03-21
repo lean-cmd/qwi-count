@@ -6,10 +6,13 @@
  * @author claude — 2026-03-20
  */
 
+export type TileShape = 'circle' | 'star4' | 'diamond' | 'square' | 'clover' | 'starburst';
+
 export interface Player {
   id: string;
   name: string;
   color: string;
+  shape: TileShape;
   score: number;
   bonusCount: number;
   turnScores: number[];

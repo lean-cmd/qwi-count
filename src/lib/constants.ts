@@ -23,3 +23,5 @@ export const END_GAME_BONUS = 6;
 export const MAX_LINE_LENGTH = 6;
 
 export const SCORE_BUTTONS = [1, 2, 3, 4, 5, 6] as const;
+
+export const TILE_SHAPES = ['circle', 'star4', 'diamond', 'square', 'clover', 'starburst'] as const;

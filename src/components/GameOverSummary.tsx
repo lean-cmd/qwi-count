@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '@/stores/gameStore';
 import { useRouter } from 'next/navigation';
 import { Trophy, Home, RotateCcw, Star } from 'lucide-react';
+import TileShapeIcon from '@/components/TileShapeIcon';
 
 export default function GameOverSummary() {
   const players = useGameStore((s) => s.players);
@@ -64,10 +65,7 @@ export default function GameOverSummary() {
               <span className="text-2xl font-bold w-8 text-center opacity-40">
                 {index + 1}
               </span>
-              <div
-                className="w-8 h-8 rounded-full"
-                style={{ backgroundColor: player.color }}
-              />
+              <TileShapeIcon shape={player.shape} color={player.color} size={32} />
               <div className="flex-1">
                 <p className="font-bold text-lg">{player.name}</p>
                 <div className="flex gap-3 text-sm opacity-60">

@@ -11,8 +11,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuid } from 'uuid';
-import type { Player, GameAction, UndoEntry } from '@/types';
-import { PERFECT_LINE_POINTS } from '@/lib/constants';
+import type { Player, GameAction, UndoEntry, TileShape } from '@/types';
+import { PERFECT_LINE_POINTS, TILE_SHAPES } from '@/lib/constants';
 
 interface GameStore {
   // Game state
@@ -32,7 +32,7 @@ interface GameStore {
   pendingBonusCount: number;
 
   // Actions
-  startGame: (playerSetups: { name: string; color: string }[]) => void;
+  startGame: (playerSetups: { name: string; color: string; shape?: TileShape }[]) => void;
   addPoints: (points: number) => void;
   addPerfectLine: () => void;
   subtractPoints: (points: number) => void;
@@ -66,10 +66,13 @@ export const useGameStore = create<GameStore>()(
       },
 
       startGame: (playerSetups) => {
-        const players: Player[] = playerSetups.map((p) => ({
+        // Shuffle shapes and assign one per player
+        const shuffled = [...TILE_SHAPES].sort(() => Math.random() - 0.5);
+        const players: Player[] = playerSetups.map((p, i) => ({
           id: uuid(),
           name: p.name,
           color: p.color,
+          shape: p.shape ?? shuffled[i % shuffled.length],
           score: 0,
           bonusCount: 0,
           turnScores: [],
