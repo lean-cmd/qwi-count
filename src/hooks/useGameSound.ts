@@ -112,5 +112,64 @@ export function useGameSound() {
     });
   }, [soundEnabled]);
 
-  return { playClick, playChime, playFanfare };
+  const playVictory = useCallback(() => {
+    if (!soundEnabled) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') ctx.resume();
+
+    // Grand victory fanfare — triumphant brass-like chord progression
+    // Opening chord (C major)
+    playTone(ctx, 261.63, 0.4, 0.18, 'sine', 0);      // C4
+    playTone(ctx, 329.63, 0.4, 0.18, 'sine', 0);      // E4
+    playTone(ctx, 392.00, 0.4, 0.18, 'triangle', 0);   // G4
+
+    // Rising to F major
+    playTone(ctx, 349.23, 0.4, 0.18, 'sine', 0.35);    // F4
+    playTone(ctx, 440.00, 0.4, 0.18, 'sine', 0.35);    // A4
+    playTone(ctx, 523.25, 0.4, 0.18, 'triangle', 0.35); // C5
+
+    // Triumphant G major
+    playTone(ctx, 392.00, 0.4, 0.2, 'sine', 0.7);      // G4
+    playTone(ctx, 493.88, 0.4, 0.2, 'sine', 0.7);      // B4
+    playTone(ctx, 587.33, 0.4, 0.2, 'triangle', 0.7);   // D5
+
+    // Final grand C major (high) — held long
+    playTone(ctx, 523.25, 0.8, 0.22, 'sine', 1.05);     // C5
+    playTone(ctx, 659.25, 0.8, 0.22, 'sine', 1.05);     // E5
+    playTone(ctx, 783.99, 0.8, 0.18, 'triangle', 1.05);  // G5
+    playTone(ctx, 1046.5, 0.8, 0.15, 'sine', 1.05);     // C6
+
+    // Clapping rhythm — noise bursts that sound like applause
+    const clapTimes = [1.6, 1.75, 1.9, 2.05, 2.15, 2.25, 2.35, 2.5, 2.6, 2.7, 2.85, 3.0];
+    clapTimes.forEach((t) => {
+      // White noise burst simulating a clap
+      const bufferSize = ctx.sampleRate * 0.04;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      // Band-pass filter to shape the clap
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1200 + Math.random() * 600;
+      filter.Q.value = 0.8;
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.25 + Math.random() * 0.1, ctx.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.06);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start(ctx.currentTime + t);
+      noise.stop(ctx.currentTime + t + 0.06);
+    });
+  }, [soundEnabled]);
+
+  return { playClick, playChime, playFanfare, playVictory };
 }
