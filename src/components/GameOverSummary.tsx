@@ -59,7 +59,7 @@ export default function GameOverSummary() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="flex items-center gap-3 bg-foreground/5 rounded-2xl p-4"
+              className="flex items-center gap-3 bg-surface rounded-2xl p-4"
             >
               <span className="text-2xl font-bold w-8 text-center opacity-40">
                 {index + 1}
@@ -91,7 +91,7 @@ export default function GameOverSummary() {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={handleHome}
-          className="flex-1 py-4 rounded-2xl bg-foreground/10 font-bold text-lg flex items-center justify-center gap-2"
+          className="flex-1 py-4 rounded-2xl bg-surface font-bold text-lg flex items-center justify-center gap-2"
         >
           <Home size={20} />
           Home

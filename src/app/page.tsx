@@ -70,7 +70,7 @@ export default function HomePage() {
                   animate={{ opacity: 1, y: 0 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => router.push('/game')}
-                  className="w-full py-4 rounded-2xl bg-foreground/10 font-bold text-lg flex items-center justify-center gap-3"
+                  className="w-full py-4 rounded-2xl bg-surface font-bold text-lg flex items-center justify-center gap-3"
                 >
                   <RotateCcw size={20} />
                   Resume Game

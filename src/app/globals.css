@@ -3,8 +3,21 @@
 :root {
   --background: #FEFBF6;
   --foreground: #1A1A2E;
-  --primary: #FF6B6B;
-  --secondary: #FFD93D;
+  --primary: #E63946;
+  --secondary: #F4A261;
+  --accent: #2A9D8F;
+  --surface: rgba(26, 26, 46, 0.05);
+  --surface-hover: rgba(26, 26, 46, 0.10);
+}
+
+html.dark {
+  --background: #16161E;
+  --foreground: #F0EDE6;
+  --primary: #FF5C6A;
+  --secondary: #FFB877;
+  --accent: #3CC4B1;
+  --surface: rgba(240, 237, 230, 0.08);
+  --surface-hover: rgba(240, 237, 230, 0.14);
 }
 
 @theme inline {
@@ -12,22 +25,17 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
   --font-sans: var(--font-nunito);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1A1A2E;
-    --foreground: #FEFBF6;
-    --primary: #FF6B6B;
-    --secondary: #FFD93D;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Tap highlight removal for mobile */

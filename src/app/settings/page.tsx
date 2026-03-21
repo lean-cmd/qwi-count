@@ -22,7 +22,7 @@ function Toggle({
     <button
       onClick={onToggle}
       className={`w-12 h-7 rounded-full transition-colors relative ${
-        enabled ? 'bg-primary' : 'bg-foreground/20'
+        enabled ? 'bg-primary' : 'bg-surface-hover'
       }`}
     >
       <div
@@ -44,7 +44,7 @@ export default function SettingsPage() {
 
       <div className="space-y-4">
         {/* Sound */}
-        <div className="flex items-center justify-between bg-foreground/5 rounded-2xl p-4">
+        <div className="flex items-center justify-between bg-surface rounded-2xl p-4">
           <div className="flex items-center gap-3">
             {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
             <div>
@@ -56,7 +56,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Haptics */}
-        <div className="flex items-center justify-between bg-foreground/5 rounded-2xl p-4">
+        <div className="flex items-center justify-between bg-surface rounded-2xl p-4">
           <div className="flex items-center gap-3">
             <Vibrate size={20} />
             <div>
@@ -68,7 +68,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Theme */}
-        <div className="bg-foreground/5 rounded-2xl p-4 space-y-3">
+        <div className="bg-surface rounded-2xl p-4 space-y-3">
           <p className="font-bold">Theme</p>
           <div className="flex gap-2">
             {(['system', 'light', 'dark'] as const).map((t) => (
@@ -76,7 +76,7 @@ export default function SettingsPage() {
                 key={t}
                 onClick={() => setTheme(t)}
                 className={`flex-1 py-3 rounded-xl font-bold capitalize flex items-center justify-center gap-2 transition-colors ${
-                  theme === t ? 'bg-primary text-white' : 'bg-foreground/10'
+                  theme === t ? 'bg-primary text-white' : 'bg-surface-hover'
                 }`}
               >
                 {t === 'light' && <Sun size={16} />}

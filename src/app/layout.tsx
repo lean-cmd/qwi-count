@@ -10,6 +10,7 @@ import type { Metadata, Viewport } from 'next';
 import { Nunito } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/Navigation';
+import ThemeProvider from '@/components/ThemeProvider';
 
 const nunito = Nunito({
   variable: '--font-nunito',
@@ -36,10 +37,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${nunito.variable} h-full`}>
+    <html lang="en" className={`${nunito.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-sans antialiased pb-20">
-        {children}
-        <Navigation />
+        <ThemeProvider>
+          {children}
+          <Navigation />
+        </ThemeProvider>
       </body>
     </html>
   );

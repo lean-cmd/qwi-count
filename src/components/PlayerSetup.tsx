@@ -62,7 +62,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
             whileTap={{ scale: 0.9 }}
             onClick={() => setPlayerCount((c) => Math.max(MIN_PLAYERS, c - 1))}
             disabled={playerCount <= MIN_PLAYERS}
-            className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center disabled:opacity-30"
+            className="w-12 h-12 rounded-full bg-surface flex items-center justify-center disabled:opacity-30"
           >
             <Minus size={20} />
           </motion.button>
@@ -73,7 +73,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
             whileTap={{ scale: 0.9 }}
             onClick={() => setPlayerCount((c) => Math.min(MAX_PLAYERS, c + 1))}
             disabled={playerCount >= MAX_PLAYERS}
-            className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center disabled:opacity-30"
+            className="w-12 h-12 rounded-full bg-surface flex items-center justify-center disabled:opacity-30"
           >
             <Plus size={20} />
           </motion.button>
@@ -88,7 +88,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="flex items-center gap-3 bg-foreground/5 rounded-2xl p-3"
+            className="flex items-center gap-3 bg-surface rounded-2xl p-3"
           >
             <div
               className="w-10 h-10 rounded-full shrink-0"
@@ -133,7 +133,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
         {onCancel && (
           <button
             onClick={onCancel}
-            className="flex-1 py-4 rounded-2xl bg-foreground/10 font-bold text-lg"
+            className="flex-1 py-4 rounded-2xl bg-surface font-bold text-lg"
           >
             Cancel
           </button>

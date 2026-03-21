@@ -20,10 +20,12 @@ import ScoreInput from '@/components/ScoreInput';
 import BonusButton from '@/components/BonusButton';
 import GameOverSummary from '@/components/GameOverSummary';
 import { END_GAME_BONUS } from '@/lib/constants';
+import { useGameSound } from '@/hooks/useGameSound';
 
 export default function GamePage() {
   const router = useRouter();
   const { players, isFinished, undoStack, undo, skipTurn, endGame, id } = useGameStore();
+  const { playClick } = useGameSound();
   const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   // Redirect if no game
@@ -63,17 +65,17 @@ export default function GamePage() {
       <div className="flex gap-2">
         <motion.button
           whileTap={{ scale: 0.9 }}
-          onClick={undo}
+          onClick={() => { playClick(); undo(); }}
           disabled={undoStack.length === 0}
-          className="flex-1 h-12 rounded-xl bg-foreground/10 font-bold flex items-center justify-center gap-2 disabled:opacity-30"
+          className="flex-1 h-12 rounded-xl bg-surface font-bold flex items-center justify-center gap-2 disabled:opacity-30"
         >
           <Undo2 size={16} />
           Undo
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.9 }}
-          onClick={skipTurn}
-          className="flex-1 h-12 rounded-xl bg-foreground/10 font-bold flex items-center justify-center gap-2"
+          onClick={() => { playClick(); skipTurn(); }}
+          className="flex-1 h-12 rounded-xl bg-surface font-bold flex items-center justify-center gap-2"
         >
           <SkipForward size={16} />
           Skip
@@ -81,7 +83,7 @@ export default function GamePage() {
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => setShowEndConfirm(true)}
-          className="flex-1 h-12 rounded-xl bg-foreground/10 font-bold flex items-center justify-center gap-2 text-red-500"
+          className="flex-1 h-12 rounded-xl bg-surface font-bold flex items-center justify-center gap-2 text-red-500"
         >
           <Square size={16} />
           End
@@ -128,7 +130,7 @@ export default function GamePage() {
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => setShowEndConfirm(false)}
-                  className="flex-1 py-3 rounded-xl bg-foreground/10 font-bold"
+                  className="flex-1 py-3 rounded-xl bg-surface font-bold"
                 >
                   Cancel
                 </button>

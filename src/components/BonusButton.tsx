@@ -2,9 +2,10 @@
  * BonusButton.tsx
  *
  * Big celebration button that awards 12 points for a perfect line,
- * triggers confetti + animation.
+ * triggers confetti + sound + animation.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-20 — added fanfare sound
  */
 
 'use client';
@@ -13,6 +14,7 @@ import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useGameStore } from '@/stores/gameStore';
 import { Sparkles } from 'lucide-react';
+import { useGameSound } from '@/hooks/useGameSound';
 
 function triggerBonusConfetti() {
   confetti({
@@ -25,9 +27,11 @@ function triggerBonusConfetti() {
 
 export default function BonusButton() {
   const addPerfectLine = useGameStore((s) => s.addPerfectLine);
+  const { playFanfare } = useGameSound();
 
   const handleBonus = () => {
     triggerBonusConfetti();
+    playFanfare();
     addPerfectLine();
   };
 

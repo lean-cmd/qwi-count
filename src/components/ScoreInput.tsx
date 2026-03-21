@@ -5,7 +5,7 @@
  * Points accumulate during a turn; player presses "Next" to commit.
  *
  * @author claude — 2026-03-20
- * @modified claude — 2026-03-20 — accumulate points per turn, added Next button
+ * @modified claude — 2026-03-20 — added sound effects
  */
 
 'use client';
@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '@/stores/gameStore';
 import { SCORE_BUTTONS } from '@/lib/constants';
 import { Hash, ChevronRight, Minus } from 'lucide-react';
+import { useGameSound } from '@/hooks/useGameSound';
 
 export default function ScoreInput() {
   const addPoints = useGameStore((s) => s.addPoints);
@@ -25,13 +26,25 @@ export default function ScoreInput() {
   const subtractPoints = useGameStore((s) => s.subtractPoints);
   const [showCustom, setShowCustom] = useState(false);
   const [customValue, setCustomValue] = useState('');
+  const { playClick, playChime } = useGameSound();
 
   const currentPlayer = players[currentPlayerIndex];
-  const currentColor = currentPlayer?.color ?? '#FF6B6B';
+  const currentColor = currentPlayer?.color ?? '#E63946';
+
+  const handleAddPoints = (points: number) => {
+    playClick();
+    addPoints(points);
+  };
+
+  const handleCommit = () => {
+    playChime();
+    commitTurn();
+  };
 
   const handleCustomSubmit = () => {
     const val = parseInt(customValue);
     if (val > 0 && val <= 99) {
+      playClick();
       addPoints(val);
       setCustomValue('');
       setShowCustom(false);
@@ -46,7 +59,7 @@ export default function ScoreInput() {
           <motion.button
             key={points}
             whileTap={{ scale: 0.9 }}
-            onClick={() => addPoints(points)}
+            onClick={() => handleAddPoints(points)}
             className="h-16 rounded-2xl text-2xl font-bold text-white shadow-md active:shadow-sm transition-shadow"
             style={{ backgroundColor: currentColor }}
           >
@@ -75,7 +88,7 @@ export default function ScoreInput() {
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="Points..."
               autoFocus
-              className="flex-1 h-14 rounded-2xl bg-foreground/10 text-center text-xl font-bold outline-none"
+              className="flex-1 h-14 rounded-2xl bg-surface text-center text-xl font-bold outline-none"
             />
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -87,7 +100,7 @@ export default function ScoreInput() {
             </motion.button>
             <button
               onClick={() => { setShowCustom(false); setCustomValue(''); }}
-              className="h-14 px-4 rounded-2xl bg-foreground/10 font-bold"
+              className="h-14 px-4 rounded-2xl bg-surface font-bold"
             >
               ✕
             </button>
@@ -97,7 +110,7 @@ export default function ScoreInput() {
             key="custom-toggle"
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowCustom(true)}
-            className="w-full h-14 rounded-2xl bg-foreground/10 font-bold text-lg flex items-center justify-center gap-2"
+            className="w-full h-14 rounded-2xl bg-surface font-bold text-lg flex items-center justify-center gap-2"
           >
             <Hash size={18} />
             Custom
@@ -116,12 +129,12 @@ export default function ScoreInput() {
           >
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => subtractPoints(1)}
-              className="h-14 w-14 rounded-2xl bg-foreground/10 flex items-center justify-center shrink-0"
+              onClick={() => { playClick(); subtractPoints(1); }}
+              className="h-14 w-14 rounded-2xl bg-surface flex items-center justify-center shrink-0"
             >
               <Minus size={18} />
             </motion.button>
-            <div className="flex-1 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center">
+            <div className="flex-1 h-14 rounded-2xl bg-surface flex items-center justify-center">
               <motion.span
                 key={pendingScore}
                 initial={{ scale: 1.2 }}
@@ -134,7 +147,7 @@ export default function ScoreInput() {
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={commitTurn}
+              onClick={handleCommit}
               className="h-14 px-6 rounded-2xl text-white font-bold text-lg flex items-center gap-2 shadow-md shrink-0"
               style={{ backgroundColor: currentColor }}
             >

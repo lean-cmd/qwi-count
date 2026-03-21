@@ -42,7 +42,7 @@ export default function RulesPage() {
 
         <section>
           <h2 className="text-xl font-bold text-foreground mb-2">Scoring Examples</h2>
-          <div className="space-y-3 text-sm bg-foreground/5 rounded-2xl p-4">
+          <div className="space-y-3 text-sm bg-surface rounded-2xl p-4">
             <div>
               <p className="font-bold">Place 1 tile extending a line of 3:</p>
               <p>Score: 4 points (4 tiles in the line)</p>
