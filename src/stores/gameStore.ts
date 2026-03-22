@@ -112,7 +112,12 @@ export const useGameStore = create<GameStore>()(
       subtractPoints: (points) => {
         const state = get();
         if (state.isFinished) return;
-        set({ pendingScore: Math.max(0, state.pendingScore - points) });
+        const newScore = Math.max(0, state.pendingScore - points);
+        // Recalculate how many perfect lines the pending score can contain
+        // If score drops below what N perfect lines would require, remove stars
+        const maxBonuses = Math.floor(newScore / PERFECT_LINE_POINTS);
+        const newBonusCount = Math.min(state.pendingBonusCount, maxBonuses);
+        set({ pendingScore: newScore, pendingBonusCount: newBonusCount });
       },
 
       commitTurn: () => {

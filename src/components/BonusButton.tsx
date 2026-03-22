@@ -17,7 +17,7 @@ import { useGameStore } from '@/stores/gameStore';
 import { Sparkles } from 'lucide-react';
 import { useGameSound } from '@/hooks/useGameSound';
 
-const CONFETTI_COLORS = ['#E63946', '#F4A261', '#E9C46A', '#2A9D8F', '#264653', '#7B2CBF'];
+const CONFETTI_COLORS = ['#E8192C', '#F58220', '#FFD100', '#00A651', '#0054A6', '#7B2D8E'];
 
 function triggerBonusConfetti() {
   // Initial big burst from center

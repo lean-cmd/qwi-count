@@ -22,7 +22,7 @@ import GameStats from '@/components/GameStats';
 import { useGameSound } from '@/hooks/useGameSound';
 import type { Player } from '@/types';
 
-const PARTY_COLORS = ['#E63946', '#F4A261', '#E9C46A', '#2A9D8F', '#264653', '#7B2CBF', '#FF6B6B', '#FFD93D'];
+const PARTY_COLORS = ['#E8192C', '#F58220', '#FFD100', '#00A651', '#0054A6', '#7B2D8E'];
 
 function triggerVictoryConfetti() {
   confetti({

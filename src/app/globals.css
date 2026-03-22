@@ -3,9 +3,9 @@
 :root {
   --background: #FEFBF6;
   --foreground: #1A1A2E;
-  --primary: #E63946;
-  --secondary: #F4A261;
-  --accent: #2A9D8F;
+  --primary: #E8192C;
+  --secondary: #F58220;
+  --accent: #00A651;
   --surface: rgba(26, 26, 46, 0.05);
   --surface-hover: rgba(26, 26, 46, 0.10);
 }
@@ -13,9 +13,9 @@
 html.dark {
   --background: #16161E;
   --foreground: #F0EDE6;
-  --primary: #FF5C6A;
-  --secondary: #FFB877;
-  --accent: #3CC4B1;
+  --primary: #FF4050;
+  --secondary: #FF9B45;
+  --accent: #2EBD6B;
   --surface: rgba(240, 237, 230, 0.08);
   --surface-hover: rgba(240, 237, 230, 0.14);
 }

@@ -7,12 +7,12 @@
  */
 
 export const PLAYER_COLORS = [
-  { name: 'Red', hex: '#E63946' },
-  { name: 'Orange', hex: '#F4A261' },
-  { name: 'Green', hex: '#2A9D8F' },
-  { name: 'Blue', hex: '#264653' },
-  { name: 'Purple', hex: '#7B2CBF' },
-  { name: 'Yellow', hex: '#E9C46A' },
+  { name: 'Red', hex: '#E8192C' },
+  { name: 'Orange', hex: '#F58220' },
+  { name: 'Yellow', hex: '#FFD100' },
+  { name: 'Green', hex: '#00A651' },
+  { name: 'Blue', hex: '#0054A6' },
+  { name: 'Purple', hex: '#7B2D8E' },
 ] as const;
 
 export const MIN_PLAYERS = 2;

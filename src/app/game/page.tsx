@@ -22,6 +22,13 @@ import GameOverSummary from '@/components/GameOverSummary';
 import { END_GAME_BONUS } from '@/lib/constants';
 import { useGameSound } from '@/hooks/useGameSound';
 
+function textForColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 160 ? '#1A1A2E' : '#FFFFFF';
+}
+
 export default function GamePage() {
   const router = useRouter();
   const { players, isFinished, undoStack, undo, skipTurn, endGame, id } = useGameStore();
@@ -120,8 +127,8 @@ export default function GamePage() {
                       endGame(player.id);
                       setShowEndConfirm(false);
                     }}
-                    className="w-full py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2"
-                    style={{ backgroundColor: player.color }}
+                    className="w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2"
+                    style={{ backgroundColor: player.color, color: textForColor(player.color) }}
                   >
                     +{END_GAME_BONUS} to {player.name}
                   </motion.button>
