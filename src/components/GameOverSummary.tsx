@@ -12,63 +12,16 @@
 
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import confetti from 'canvas-confetti';
 import { useGameStore } from '@/stores/gameStore';
+import { useSettingsStore } from '@/stores/settingsStore';
 import { useRouter } from 'next/navigation';
 import { Trophy, Home, RotateCcw, Star } from 'lucide-react';
 import TileShapeIcon from '@/components/TileShapeIcon';
 import ScoreChart from '@/components/ScoreChart';
 import GameStats from '@/components/GameStats';
 import { useGameSound } from '@/hooks/useGameSound';
+import { playCelebration } from '@/lib/celebrations';
 import type { Player } from '@/types';
-
-const PARTY_COLORS = ['#E8192C', '#F58220', '#FFD100', '#00A651', '#0054A6', '#7B2D8E'];
-
-function triggerVictoryConfetti() {
-  confetti({
-    particleCount: 200, spread: 120,
-    origin: { x: 0.5, y: 0.6 },
-    colors: PARTY_COLORS, startVelocity: 50, gravity: 0.7, ticks: 250,
-  });
-
-  setTimeout(() => {
-    confetti({
-      particleCount: 100, angle: 60, spread: 60,
-      origin: { x: 0, y: 0.8 },
-      colors: PARTY_COLORS, startVelocity: 60, ticks: 200,
-    });
-  }, 300);
-
-  setTimeout(() => {
-    confetti({
-      particleCount: 100, angle: 120, spread: 60,
-      origin: { x: 1, y: 0.8 },
-      colors: PARTY_COLORS, startVelocity: 60, ticks: 200,
-    });
-  }, 500);
-
-  setTimeout(() => {
-    confetti({
-      particleCount: 80, spread: 180,
-      origin: { x: 0.5, y: -0.1 },
-      colors: PARTY_COLORS, startVelocity: 15, gravity: 0.4, ticks: 400, drift: 1, scalar: 1.5,
-    });
-  }, 700);
-
-  setTimeout(() => {
-    confetti({ particleCount: 50, angle: 45, spread: 40, origin: { x: 0.1, y: 0 }, colors: PARTY_COLORS, startVelocity: 20, gravity: 0.3, ticks: 350, drift: 0.5, scalar: 1.4 });
-    confetti({ particleCount: 50, angle: 135, spread: 40, origin: { x: 0.9, y: 0 }, colors: PARTY_COLORS, startVelocity: 20, gravity: 0.3, ticks: 350, drift: -0.5, scalar: 1.4 });
-  }, 1000);
-
-  setTimeout(() => {
-    confetti({ particleCount: 150, spread: 160, origin: { x: 0.5, y: -0.05 }, colors: PARTY_COLORS, startVelocity: 30, gravity: 1, ticks: 300, scalar: 0.9 });
-  }, 1500);
-
-  setTimeout(() => {
-    confetti({ particleCount: 100, spread: 100, origin: { x: 0.3, y: 0.5 }, colors: PARTY_COLORS, startVelocity: 40 });
-    confetti({ particleCount: 100, spread: 100, origin: { x: 0.7, y: 0.5 }, colors: PARTY_COLORS, startVelocity: 40 });
-  }, 2200);
-}
 
 const APP_URL = 'https://qwi-count.vercel.app';
 
@@ -97,6 +50,7 @@ export default function GameOverSummary() {
   const turnNumber = useGameStore((s) => s.turnNumber);
   const resetGame = useGameStore((s) => s.resetGame);
   const router = useRouter();
+  const celebration = useSettingsStore((s) => s.celebration);
   const { playVictory } = useGameSound();
   const hasPlayed = useRef(false);
 
@@ -106,9 +60,12 @@ export default function GameOverSummary() {
   useEffect(() => {
     if (hasPlayed.current) return;
     hasPlayed.current = true;
-    triggerVictoryConfetti();
+    // Play the user's chosen celebration style
+    playCelebration(celebration);
+    // Plus a delayed second wave for the victory
+    setTimeout(() => playCelebration(celebration), 1500);
     playVictory();
-  }, [playVictory]);
+  }, [playVictory, celebration]);
 
   const handleNewGame = () => {
     resetGame();

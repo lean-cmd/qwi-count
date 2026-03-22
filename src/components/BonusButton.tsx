@@ -1,95 +1,31 @@
 /**
  * BonusButton.tsx
  *
- * Big celebration button that awards 12 points for a perfect line,
- * triggers epic confetti + sound + smiley face overlay.
+ * Big celebration button that awards 12 points for a perfect line.
+ * Uses the user's chosen celebration style from settings.
  *
  * @author claude — 2026-03-20
- * @modified claude — 2026-03-20 — enhanced confetti, added smiley overlay
+ * @modified claude — 2026-03-22 — uses selectable celebration style
  */
 
 'use client';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import confetti from 'canvas-confetti';
 import { useGameStore } from '@/stores/gameStore';
+import { useSettingsStore } from '@/stores/settingsStore';
 import { Sparkles } from 'lucide-react';
 import { useGameSound } from '@/hooks/useGameSound';
-
-const CONFETTI_COLORS = ['#E8192C', '#F58220', '#FFD100', '#00A651', '#0054A6', '#7B2D8E'];
-
-function triggerBonusConfetti() {
-  // Initial big burst from center
-  confetti({
-    particleCount: 200,
-    spread: 100,
-    origin: { x: 0.5, y: 0.5 },
-    colors: CONFETTI_COLORS,
-    startVelocity: 45,
-    gravity: 0.8,
-    ticks: 200,
-  });
-
-  // Left cannon
-  setTimeout(() => {
-    confetti({
-      particleCount: 80,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 0.65 },
-      colors: CONFETTI_COLORS,
-      startVelocity: 55,
-    });
-  }, 150);
-
-  // Right cannon
-  setTimeout(() => {
-    confetti({
-      particleCount: 80,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 0.65 },
-      colors: CONFETTI_COLORS,
-      startVelocity: 55,
-    });
-  }, 300);
-
-  // Shower from top
-  setTimeout(() => {
-    confetti({
-      particleCount: 120,
-      spread: 160,
-      origin: { x: 0.5, y: -0.1 },
-      colors: CONFETTI_COLORS,
-      startVelocity: 25,
-      gravity: 1.2,
-      ticks: 250,
-    });
-  }, 500);
-
-  // Final sparkle burst
-  setTimeout(() => {
-    confetti({
-      particleCount: 60,
-      spread: 360,
-      origin: { x: 0.5, y: 0.4 },
-      colors: CONFETTI_COLORS,
-      startVelocity: 30,
-      gravity: 0.5,
-      scalar: 0.8,
-      ticks: 150,
-    });
-  }, 800);
-}
+import { playCelebration } from '@/lib/celebrations';
 
 export default function BonusButton() {
   const addPerfectLine = useGameStore((s) => s.addPerfectLine);
+  const celebration = useSettingsStore((s) => s.celebration);
   const { playFanfare } = useGameSound();
   const [showSmiley, setShowSmiley] = useState(false);
 
   const handleBonus = () => {
-    triggerBonusConfetti();
+    playCelebration(celebration);
     playFanfare();
     addPerfectLine();
     setShowSmiley(true);
@@ -122,23 +58,12 @@ export default function BonusButton() {
               initial={{ scale: 0, rotate: -30 }}
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0, opacity: 0, y: -80 }}
-              transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 15,
-              }}
+              transition={{ type: 'spring', stiffness: 300, damping: 15 }}
               className="text-center"
             >
               <motion.div
-                animate={{
-                  y: [0, -15, 0],
-                  rotate: [0, 5, -5, 0],
-                }}
-                transition={{
-                  duration: 0.8,
-                  repeat: 2,
-                  ease: 'easeInOut',
-                }}
+                animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 0.8, repeat: 2, ease: 'easeInOut' }}
                 className="text-[120px] leading-none drop-shadow-lg"
               >
                 😄

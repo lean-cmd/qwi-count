@@ -62,8 +62,11 @@ export interface GameRecord {
   actions: GameAction[];
 }
 
+export type CelebrationStyle = 'confetti' | 'fireworks' | 'sparkle' | 'glitter' | 'party';
+
 export interface AppSettings {
   soundEnabled: boolean;
   hapticsEnabled: boolean;
   theme: 'light' | 'dark' | 'system';
+  celebration: CelebrationStyle;
 }
