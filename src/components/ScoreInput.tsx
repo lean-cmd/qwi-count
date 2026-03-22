@@ -42,6 +42,13 @@ export default function ScoreInput() {
   const currentColor = currentPlayer?.color ?? '#E8192C';
   const textOnColor = isLightColor(currentColor) ? '#1A1A2E' : '#FFFFFF';
 
+  // Next button uses the NEXT player's color
+  const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
+  const nextPlayer = players[nextPlayerIndex];
+  const nextColor = nextPlayer?.color ?? '#E8192C';
+  const nextName = nextPlayer?.name ?? 'Next';
+  const textOnNextColor = isLightColor(nextColor) ? '#1A1A2E' : '#FFFFFF';
+
   const handleAddPoints = (points: number) => {
     playClick();
     addPoints(points);
@@ -146,15 +153,24 @@ export default function ScoreInput() {
               <motion.button
                 whileTap={{ scale: 0.92 }}
                 whileHover={{ scale: 1.03 }}
+                animate={{
+                  boxShadow: [
+                    `0 0 8px 2px ${nextColor}60`,
+                    `0 0 20px 6px ${nextColor}40`,
+                    `0 0 8px 2px ${nextColor}60`,
+                  ],
+                }}
+                transition={{
+                  boxShadow: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+                }}
                 onClick={handleCommit}
-                className="h-14 px-8 rounded-2xl font-extrabold text-lg flex items-center gap-1.5 shadow-lg shrink-0"
+                className="h-14 px-7 rounded-2xl font-extrabold text-lg flex items-center gap-1.5 shrink-0"
                 style={{
-                  background: `linear-gradient(135deg, ${currentColor}, ${currentColor}CC)`,
-                  color: textOnColor,
-                  boxShadow: `0 4px 14px ${currentColor}50`,
+                  background: `linear-gradient(135deg, ${nextColor}, ${nextColor}DD)`,
+                  color: textOnNextColor,
                 }}
               >
-                Next
+                {nextName}
                 <ChevronRight size={22} strokeWidth={3} />
               </motion.button>
             </motion.div>
