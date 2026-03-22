@@ -1,20 +1,20 @@
 /**
  * settings/page.tsx
  *
- * Settings screen: sound, haptics, theme, and celebration style picker
- * with a "Test" button to preview each animation.
+ * Settings screen: sound, haptics, theme, and language picker.
  *
  * @author claude — 2026-03-20
- * @modified claude — 2026-03-22 — added celebration style picker with preview
+ * @modified claude — 2026-03-22 — replaced celebration picker with language picker
  */
 
 'use client';
 
 import { useSettingsStore } from '@/stores/settingsStore';
-import { Volume2, VolumeX, Vibrate, Sun, Moon, PartyPopper } from 'lucide-react';
+import { Volume2, VolumeX, Vibrate, Sun, Moon, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { playCelebration, CELEBRATION_OPTIONS } from '@/lib/celebrations';
-import { useGameSound } from '@/hooks/useGameSound';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LANGUAGE_OPTIONS } from '@/lib/i18n';
+import type { Language } from '@/types';
 
 function Toggle({
   enabled,
@@ -40,18 +40,13 @@ function Toggle({
 }
 
 export default function SettingsPage() {
-  const { soundEnabled, hapticsEnabled, theme, celebration, toggleSound, toggleHaptics, setTheme, setCelebration } =
+  const { soundEnabled, hapticsEnabled, theme, language, toggleSound, toggleHaptics, setTheme, setLanguage } =
     useSettingsStore();
-  const { playFanfare } = useGameSound();
-
-  const handleTestCelebration = (style: typeof celebration) => {
-    playCelebration(style);
-    playFanfare();
-  };
+  const t = useTranslation();
 
   return (
     <main className="flex-1 px-6 py-8 max-w-md mx-auto w-full">
-      <h1 className="text-3xl font-extrabold mb-6">Settings</h1>
+      <h1 className="text-3xl font-extrabold mb-6">{t.settings}</h1>
 
       <div className="space-y-4">
         {/* Sound */}
@@ -59,8 +54,8 @@ export default function SettingsPage() {
           <div className="flex items-center gap-3">
             {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
             <div>
-              <p className="font-bold">Sound Effects</p>
-              <p className="text-sm opacity-60">Score chimes and celebrations</p>
+              <p className="font-bold">{t.soundEffects}</p>
+              <p className="text-sm opacity-60">{t.soundDesc}</p>
             </div>
           </div>
           <Toggle enabled={soundEnabled} onToggle={toggleSound} />
@@ -71,8 +66,8 @@ export default function SettingsPage() {
           <div className="flex items-center gap-3">
             <Vibrate size={20} />
             <div>
-              <p className="font-bold">Haptic Feedback</p>
-              <p className="text-sm opacity-60">Vibration on native devices</p>
+              <p className="font-bold">{t.hapticFeedback}</p>
+              <p className="text-sm opacity-60">{t.hapticDesc}</p>
             </div>
           </div>
           <Toggle enabled={hapticsEnabled} onToggle={toggleHaptics} />
@@ -80,74 +75,66 @@ export default function SettingsPage() {
 
         {/* Theme */}
         <div className="bg-surface rounded-2xl p-4 space-y-3">
-          <p className="font-bold">Theme</p>
+          <p className="font-bold">{t.theme}</p>
           <div className="flex gap-2">
-            {(['system', 'light', 'dark'] as const).map((t) => (
+            {(['system', 'light', 'dark'] as const).map((themeOption) => (
               <button
-                key={t}
-                onClick={() => setTheme(t)}
+                key={themeOption}
+                onClick={() => setTheme(themeOption)}
                 className={`flex-1 py-3 rounded-xl font-bold capitalize flex items-center justify-center gap-2 transition-colors ${
-                  theme === t ? 'bg-primary text-white' : 'bg-surface-hover'
+                  theme === themeOption ? 'bg-primary text-white' : 'bg-surface-hover'
                 }`}
               >
-                {t === 'light' && <Sun size={16} />}
-                {t === 'dark' && <Moon size={16} />}
-                {t}
+                {themeOption === 'light' && <Sun size={16} />}
+                {themeOption === 'dark' && <Moon size={16} />}
+                {themeOption === 'system' ? t.system : themeOption === 'light' ? t.light : t.dark}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Celebration Style */}
+        {/* Language */}
         <div className="bg-surface rounded-2xl p-4 space-y-3">
           <div className="flex items-center gap-2">
-            <PartyPopper size={20} />
-            <p className="font-bold">Celebration Style</p>
+            <Globe size={20} />
+            <div>
+              <p className="font-bold">{t.language}</p>
+              <p className="text-sm opacity-60">{t.languageDesc}</p>
+            </div>
           </div>
-          <p className="text-sm opacity-60">Choose the animation for Perfect Line</p>
 
-          <div className="space-y-2">
-            {CELEBRATION_OPTIONS.map((opt) => {
-              const isSelected = celebration === opt.value;
+          <div className="grid grid-cols-2 gap-2">
+            {LANGUAGE_OPTIONS.map((opt) => {
+              const isSelected = language === opt.value;
               return (
-                <div key={opt.value} className="flex items-center gap-2">
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => setCelebration(opt.value)}
-                    className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center gap-3 transition-all ${
-                      isSelected
-                        ? 'bg-primary text-white shadow-md'
-                        : 'bg-surface-hover'
-                    }`}
-                  >
-                    <span className="text-xl">{opt.emoji}</span>
-                    <span>{opt.label}</span>
-                    {isSelected && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="ml-auto text-sm opacity-80"
-                      >
-                        Active
-                      </motion.span>
-                    )}
-                  </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => handleTestCelebration(opt.value)}
-                    className="h-12 w-12 rounded-xl bg-surface-hover flex items-center justify-center shrink-0 font-bold text-sm"
-                    title={`Test ${opt.label}`}
-                  >
-                    <span className="text-lg">▶</span>
-                  </motion.button>
-                </div>
+                <motion.button
+                  key={opt.value}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setLanguage(opt.value as Language)}
+                  className={`py-3 px-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all ${
+                    isSelected
+                      ? 'bg-primary text-white shadow-md'
+                      : 'bg-surface-hover'
+                  }`}
+                >
+                  <span className="flex-1 text-left">{opt.native}</span>
+                  {isSelected && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="text-xs opacity-80"
+                    >
+                      ✓
+                    </motion.span>
+                  )}
+                </motion.button>
               );
             })}
           </div>
         </div>
       </div>
 
-      <p className="text-center text-sm opacity-40 mt-12">Qwi Count v0.2</p>
+      <p className="text-center text-sm opacity-40 mt-12">Qwi Count v0.3</p>
     </main>
   );
 }

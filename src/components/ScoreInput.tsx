@@ -6,7 +6,7 @@
  * Custom and Next/pending always share the same row to avoid layout shift.
  *
  * @author claude — 2026-03-20
- * @modified claude — 2026-03-22 — fixed layout shift, custom + next in same row
+ * @modified claude — 2026-03-22 — i18n, "Next:" prefix on button
  */
 
 'use client';
@@ -17,13 +17,13 @@ import { useGameStore } from '@/stores/gameStore';
 import { SCORE_BUTTONS } from '@/lib/constants';
 import { Hash, ChevronRight, Minus, X } from 'lucide-react';
 import { useGameSound } from '@/hooks/useGameSound';
+import { useTranslation } from '@/hooks/useTranslation';
 
 /** Returns true if the color is light enough to need dark text */
 function isLightColor(hex: string): boolean {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  // Perceived brightness formula
   return (r * 299 + g * 587 + b * 114) / 1000 > 160;
 }
 
@@ -37,6 +37,7 @@ export default function ScoreInput() {
   const [showCustom, setShowCustom] = useState(false);
   const [customValue, setCustomValue] = useState('');
   const { playClick, playChime } = useGameSound();
+  const t = useTranslation();
 
   const currentPlayer = players[currentPlayerIndex];
   const currentColor = currentPlayer?.color ?? '#E8192C';
@@ -46,7 +47,7 @@ export default function ScoreInput() {
   const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
   const nextPlayer = players[nextPlayerIndex];
   const nextColor = nextPlayer?.color ?? '#E8192C';
-  const nextName = nextPlayer?.name ?? 'Next';
+  const nextName = nextPlayer?.name ?? t.next;
   const textOnNextColor = isLightColor(nextColor) ? '#1A1A2E' : '#FFFFFF';
 
   const handleAddPoints = (points: number) => {
@@ -170,6 +171,7 @@ export default function ScoreInput() {
                   color: textOnNextColor,
                 }}
               >
+                <span className="text-sm font-bold opacity-70">{t.next}:</span>
                 {nextName}
                 <ChevronRight size={22} strokeWidth={3} />
               </motion.button>
@@ -185,7 +187,7 @@ export default function ScoreInput() {
               className="flex-1 h-14 rounded-2xl bg-surface font-bold text-lg flex items-center justify-center gap-2"
             >
               <Hash size={18} />
-              Custom
+              {t.custom}
             </motion.button>
           )}
         </AnimatePresence>

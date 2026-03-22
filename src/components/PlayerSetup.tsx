@@ -7,7 +7,7 @@
  *  Step 2 — "Who starts?" — tap a player to mark them as first.
  *
  * @author claude — 2026-03-20
- * @modified claude — 2026-03-22 — added reorder + who-starts flow
+ * @modified claude — 2026-03-22 — i18n support
  */
 
 'use client';
@@ -20,6 +20,7 @@ import { useGameStore } from '@/stores/gameStore';
 import { useRouter } from 'next/navigation';
 import type { TileShape } from '@/types';
 import TileShapeIcon from '@/components/TileShapeIcon';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PlayerConfig {
   name: string;
@@ -33,8 +34,8 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
   const [playerCount, setPlayerCount] = useState(2);
   const [step, setStep] = useState<'setup' | 'who-starts'>('setup');
   const [startingPlayerIndex, setStartingPlayerIndex] = useState<number | null>(null);
+  const t = useTranslation();
 
-  // Shuffle shapes once on mount
   const shuffledShapes = useMemo(() => {
     return [...TILE_SHAPES].sort(() => Math.random() - 0.5);
   }, []);
@@ -53,7 +54,6 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
     );
   };
 
-  // Drag reorder state
   const dragIndexRef = useRef<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -104,7 +104,6 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
   };
 
   const handleStart = (firstIndex: number) => {
-    // Reorder so the chosen player is first
     const reordered = [
       ...activePlayers.slice(firstIndex),
       ...activePlayers.slice(0, firstIndex),
@@ -123,9 +122,9 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
         className="w-full max-w-md mx-auto space-y-6"
       >
         <div className="text-center space-y-2">
-          <h2 className="text-xl font-bold">Who starts?</h2>
+          <h2 className="text-xl font-bold">{t.whoStarts}</h2>
           <p className="text-sm opacity-50">
-            The player with the best opening move goes first
+            {t.whoStartsDesc}
           </p>
         </div>
 
@@ -163,7 +162,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
           className="flex items-center gap-2 mx-auto text-foreground/50 font-medium"
         >
           <ArrowLeft size={16} />
-          Back
+          {t.back}
         </button>
       </motion.div>
     );
@@ -177,7 +176,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
     >
       {/* Player count selector */}
       <div className="text-center space-y-3">
-        <h2 className="text-xl font-bold">How many players?</h2>
+        <h2 className="text-xl font-bold">{t.howManyPlayers}</h2>
         <div className="flex items-center justify-center gap-4">
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -203,7 +202,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
 
       {/* Player name + shape + color inputs (draggable) */}
       <div>
-        <p className="text-xs opacity-40 mb-2 text-center">Drag to set turn order</p>
+        <p className="text-xs opacity-40 mb-2 text-center">{t.dragToReorder}</p>
         <div
           ref={playerListRef}
           className="space-y-3"
@@ -234,7 +233,6 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
               onTouchStart={() => handleTouchStart(i)}
               onTouchMove={(e) => handleTouchMove(e, playerListRef)}
             >
-              {/* Drag handle */}
               <div className="touch-none cursor-grab active:cursor-grabbing opacity-30 shrink-0">
                 <GripVertical size={18} />
               </div>
@@ -286,7 +284,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
             onClick={onCancel}
             className="flex-1 py-4 rounded-2xl bg-surface font-bold text-lg"
           >
-            Cancel
+            {t.cancel}
           </button>
         )}
         <motion.button
@@ -294,7 +292,7 @@ export default function PlayerSetup({ onCancel }: { onCancel?: () => void }) {
           onClick={handleNext}
           className="flex-1 py-4 rounded-2xl bg-primary text-white font-bold text-lg flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
         >
-          Next
+          {t.next}
           <ArrowRight size={20} />
         </motion.button>
       </div>

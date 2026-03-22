@@ -5,12 +5,14 @@
  * lead changes, total rounds, etc.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-22 — i18n support
  */
 
 'use client';
 
 import type { Player } from '@/types';
 import { TrendingUp, Zap, Target, BarChart3, Hash } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface GameStatsProps {
   players: Player[];
@@ -18,12 +20,12 @@ interface GameStatsProps {
 }
 
 export default function GameStats({ players, turnNumber }: GameStatsProps) {
+  const t = useTranslation();
+
   if (players.length === 0) return null;
 
-  // Compute stats
   const totalRounds = turnNumber - 1;
 
-  // Average per turn
   const averages = players.map((p) => {
     const nonZero = p.turnScores.filter((s) => s > 0);
     return {
@@ -34,7 +36,6 @@ export default function GameStats({ players, turnNumber }: GameStatsProps) {
   });
   const highestAvg = averages.reduce((best, curr) => curr.avg > best.avg ? curr : best);
 
-  // Biggest single turn across all players
   const allTurns = players.flatMap((p) =>
     p.turnScores.map((score, i) => ({ player: p, score, round: i + 1 }))
   );
@@ -43,7 +44,6 @@ export default function GameStats({ players, turnNumber }: GameStatsProps) {
     { player: players[0], score: 0, round: 0 }
   );
 
-  // Most consistent (lowest standard deviation among players with turns)
   const consistency = players.map((p) => {
     const scores = p.turnScores.filter((s) => s > 0);
     if (scores.length < 2) return { name: p.name, color: p.color, stdDev: Infinity };
@@ -55,7 +55,6 @@ export default function GameStats({ players, turnNumber }: GameStatsProps) {
     curr.stdDev < best.stdDev ? curr : best
   );
 
-  // Lead changes — track who's leading after each complete round
   const maxTurns = Math.max(...players.map((p) => p.turnScores.length));
   let leadChanges = 0;
   let lastLeaderId = '';
@@ -75,48 +74,47 @@ export default function GameStats({ players, turnNumber }: GameStatsProps) {
     lastLeaderId = leaderId;
   }
 
-  // Total points scored
   const totalPoints = players.reduce((sum, p) => sum + p.score, 0);
 
   const stats = [
     {
       icon: BarChart3,
-      label: 'Rounds Played',
+      label: t.roundsPlayed,
       value: `${totalRounds}`,
-      detail: `${totalPoints} total points`,
+      detail: `${totalPoints} ${t.totalPoints}`,
     },
     {
       icon: Zap,
-      label: 'Biggest Turn',
+      label: t.biggestTurn,
       value: `${biggestTurn.score} pts`,
-      detail: `${biggestTurn.player.name} in round ${biggestTurn.round}`,
+      detail: `${biggestTurn.player.name} ${t.inRound} ${biggestTurn.round}`,
       color: biggestTurn.player.color,
     },
     {
       icon: TrendingUp,
-      label: 'Highest Average',
-      value: `${highestAvg.avg.toFixed(1)} pts/turn`,
+      label: t.highestAverage,
+      value: `${highestAvg.avg.toFixed(1)} ${t.ptsPerTurn}`,
       detail: highestAvg.name,
       color: highestAvg.color,
     },
     {
       icon: Target,
-      label: 'Most Consistent',
+      label: t.mostConsistent,
       value: mostConsistent.stdDev === Infinity ? '-' : mostConsistent.name,
       detail: mostConsistent.stdDev === Infinity ? '' : `\u00B1${mostConsistent.stdDev.toFixed(1)} pts`,
       color: mostConsistent.color,
     },
     {
       icon: Hash,
-      label: 'Lead Changes',
+      label: t.leadChanges,
       value: `${leadChanges}`,
-      detail: leadChanges === 0 ? 'Dominant victory' : leadChanges >= 4 ? 'Neck and neck!' : 'Competitive game',
+      detail: leadChanges === 0 ? t.dominantVictory : leadChanges >= 4 ? t.neckAndNeck : t.competitiveGame,
     },
   ];
 
   return (
     <div className="w-full bg-surface rounded-2xl p-4 space-y-3">
-      <p className="text-sm font-bold opacity-60">Game Stats</p>
+      <p className="text-sm font-bold opacity-60">{t.gameStats}</p>
       <div className="space-y-2.5">
         {stats.map((stat) => (
           <div key={stat.label} className="flex items-center gap-3">

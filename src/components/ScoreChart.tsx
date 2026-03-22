@@ -5,28 +5,30 @@
  * Each player gets a colored line. Highlights the leader at each round.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-22 — i18n support
  */
 
 'use client';
 
 import { useMemo } from 'react';
 import type { Player } from '@/types';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ScoreChartProps {
   players: Player[];
 }
 
 export default function ScoreChart({ players }: ScoreChartProps) {
+  const t = useTranslation();
+
   const chartData = useMemo(() => {
     if (players.length === 0) return null;
 
-    // Find the max number of turns any player had
     const maxTurns = Math.max(...players.map((p) => p.turnScores.length));
     if (maxTurns === 0) return null;
 
-    // Build cumulative scores per round for each player
     const lines = players.map((player) => {
-      const cumulative: number[] = [0]; // start at 0
+      const cumulative: number[] = [0];
       let total = 0;
       for (let i = 0; i < maxTurns; i++) {
         total += player.turnScores[i] ?? 0;
@@ -41,9 +43,8 @@ export default function ScoreChart({ players }: ScoreChartProps) {
       };
     });
 
-    // Find max score for Y axis
     const maxScore = Math.max(...lines.map((l) => l.finalScore), 1);
-    const totalPoints = maxTurns + 1; // including start at 0
+    const totalPoints = maxTurns + 1;
 
     return { lines, maxScore, totalPoints, maxTurns };
   }, [players]);
@@ -52,7 +53,6 @@ export default function ScoreChart({ players }: ScoreChartProps) {
 
   const { lines, maxScore, totalPoints, maxTurns } = chartData;
 
-  // Chart dimensions
   const width = 360;
   const height = 180;
   const padLeft = 36;
@@ -65,10 +65,8 @@ export default function ScoreChart({ players }: ScoreChartProps) {
   const xScale = (i: number) => padLeft + (i / (totalPoints - 1)) * chartW;
   const yScale = (v: number) => padTop + chartH - (v / maxScore) * chartH;
 
-  // Y-axis grid lines (4 lines)
   const yTicks = Array.from({ length: 5 }, (_, i) => Math.round((maxScore / 4) * i));
 
-  // X-axis labels — show every few rounds
   const xStep = maxTurns <= 8 ? 1 : maxTurns <= 16 ? 2 : Math.ceil(maxTurns / 8);
   const xTicks: number[] = [];
   for (let i = 0; i <= maxTurns; i += xStep) {
@@ -78,13 +76,12 @@ export default function ScoreChart({ players }: ScoreChartProps) {
 
   return (
     <div className="w-full bg-surface rounded-2xl p-3 space-y-2">
-      <p className="text-sm font-bold opacity-60 px-1">Score Progression</p>
+      <p className="text-sm font-bold opacity-60 px-1">{t.scoreProgression}</p>
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-auto"
         preserveAspectRatio="xMidYMid meet"
       >
-        {/* Grid lines */}
         {yTicks.map((tick) => (
           <g key={`y-${tick}`}>
             <line
@@ -110,7 +107,6 @@ export default function ScoreChart({ players }: ScoreChartProps) {
           </g>
         ))}
 
-        {/* X-axis labels */}
         {xTicks.map((tick) => (
           <text
             key={`x-${tick}`}
@@ -126,7 +122,6 @@ export default function ScoreChart({ players }: ScoreChartProps) {
           </text>
         ))}
 
-        {/* Player lines */}
         {lines.map((line) => {
           const pathD = line.points
             .map((val, i) => `${i === 0 ? 'M' : 'L'} ${xScale(i)} ${yScale(val)}`)
@@ -143,7 +138,6 @@ export default function ScoreChart({ players }: ScoreChartProps) {
                 strokeLinejoin="round"
                 strokeOpacity={0.85}
               />
-              {/* End dot */}
               <circle
                 cx={xScale(line.points.length - 1)}
                 cy={yScale(line.finalScore)}

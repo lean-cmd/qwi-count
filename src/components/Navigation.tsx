@@ -4,6 +4,7 @@
  * Bottom navigation bar for the app.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-22 — i18n support
  */
 
 'use client';
@@ -11,16 +12,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Gamepad2, BookOpen, Settings } from 'lucide-react';
-
-const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/game', label: 'Game', icon: Gamepad2 },
-  { href: '/rules', label: 'Rules', icon: BookOpen },
-  { href: '/settings', label: 'Settings', icon: Settings },
-];
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function Navigation() {
   const pathname = usePathname();
+  const t = useTranslation();
+
+  const NAV_ITEMS = [
+    { href: '/', label: t.home, icon: Home },
+    { href: '/game', label: 'Game', icon: Gamepad2 },
+    { href: '/rules', label: t.rules, icon: BookOpen },
+    { href: '/settings', label: t.settings, icon: Settings },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-surface-hover z-50">

@@ -5,6 +5,7 @@
  * undo/skip/end controls.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-22 — i18n support
  */
 
 'use client';
@@ -21,6 +22,7 @@ import BonusButton from '@/components/BonusButton';
 import GameOverSummary from '@/components/GameOverSummary';
 import { END_GAME_BONUS } from '@/lib/constants';
 import { useGameSound } from '@/hooks/useGameSound';
+import { useTranslation } from '@/hooks/useTranslation';
 
 function textForColor(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -34,19 +36,20 @@ export default function GamePage() {
   const { players, isFinished, undoStack, undo, skipTurn, endGame, id, pendingScore, currentPlayerIndex } = useGameStore();
   const { playClick } = useGameSound();
   const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const t = useTranslation();
 
   // Redirect if no game
   if (!id) {
     return (
       <main className="flex-1 flex items-center justify-center px-6">
         <div className="text-center space-y-4">
-          <p className="text-lg font-medium opacity-60">No active game</p>
+          <p className="text-lg font-medium opacity-60">{t.noActiveGame}</p>
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push('/')}
             className="px-6 py-3 rounded-2xl bg-primary text-white font-bold"
           >
-            Start a new game
+            {t.startNewGame}
           </motion.button>
         </div>
       </main>
@@ -77,7 +80,7 @@ export default function GamePage() {
           className="flex-1 h-12 rounded-xl bg-surface font-bold flex items-center justify-center gap-2 disabled:opacity-30"
         >
           <Undo2 size={16} />
-          Undo
+          {t.undo}
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.9 }}
@@ -85,7 +88,7 @@ export default function GamePage() {
           className="flex-1 h-12 rounded-xl bg-surface font-bold flex items-center justify-center gap-2"
         >
           <SkipForward size={16} />
-          Skip
+          {t.skip}
         </motion.button>
         <motion.button
           whileTap={{ scale: 0.9 }}
@@ -93,7 +96,7 @@ export default function GamePage() {
           className="flex-1 h-12 rounded-xl bg-surface font-bold flex items-center justify-center gap-2 text-red-500"
         >
           <Square size={16} />
-          End
+          {t.end}
         </motion.button>
       </div>
 
@@ -114,17 +117,17 @@ export default function GamePage() {
               className="bg-background rounded-3xl p-6 w-full max-w-sm space-y-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-xl font-bold text-center">End Game?</h3>
+              <h3 className="text-xl font-bold text-center">{t.endGame}</h3>
               {pendingScore > 0 && (
                 <div className="bg-secondary/15 rounded-xl p-3 text-center text-sm font-medium">
                   <span className="font-bold" style={{ color: players[currentPlayerIndex]?.color }}>
                     {players[currentPlayerIndex]?.name}
                   </span>
-                  {' '}has <span className="font-bold">+{pendingScore} pts</span> pending — these will be added automatically.
+                  {' '}{t.pendingPoints} <span className="font-bold">+{pendingScore} pts</span> — {t.autoAdded}
                 </div>
               )}
               <p className="text-center opacity-60 text-sm">
-                Award +{END_GAME_BONUS} end-game bonus to a player, or end without bonus.
+                {t.endGameDesc}
               </p>
               <div className="space-y-2">
                 {players.map((player) => (
@@ -147,7 +150,7 @@ export default function GamePage() {
                   onClick={() => setShowEndConfirm(false)}
                   className="flex-1 py-3 rounded-xl bg-surface font-bold"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   onClick={() => {
@@ -156,7 +159,7 @@ export default function GamePage() {
                   }}
                   className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold"
                 >
-                  End (no bonus)
+                  {t.endNoBonus}
                 </button>
               </div>
             </motion.div>

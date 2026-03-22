@@ -4,6 +4,7 @@
  * Home screen: New Game, Resume Game, links to rules.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-22 — i18n support
  */
 
 'use client';
@@ -14,11 +15,13 @@ import { useRouter } from 'next/navigation';
 import { Play, RotateCcw, BookOpen, Sparkles } from 'lucide-react';
 import { useGameStore } from '@/stores/gameStore';
 import PlayerSetup from '@/components/PlayerSetup';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function HomePage() {
   const router = useRouter();
   const hasActiveGame = useGameStore((s) => s.hasActiveGame);
   const [showSetup, setShowSetup] = useState(false);
+  const t = useTranslation();
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-6 py-12">
@@ -49,7 +52,7 @@ export default function HomePage() {
                 <Sparkles size={32} className="text-secondary" />
               </motion.div>
               <p className="text-foreground/50 font-medium">
-                Track scores for your tile games
+                {t.appTagline}
               </p>
             </div>
 
@@ -61,7 +64,7 @@ export default function HomePage() {
                 className="w-full py-5 rounded-2xl bg-primary text-white font-bold text-xl flex items-center justify-center gap-3 shadow-lg shadow-primary/25"
               >
                 <Play size={24} fill="white" />
-                New Game
+                {t.newGame}
               </motion.button>
 
               {hasActiveGame() && (
@@ -73,7 +76,7 @@ export default function HomePage() {
                   className="w-full py-4 rounded-2xl bg-surface font-bold text-lg flex items-center justify-center gap-3"
                 >
                   <RotateCcw size={20} />
-                  Resume Game
+                  {t.resumeGame}
                 </motion.button>
               )}
             </div>
@@ -85,7 +88,7 @@ export default function HomePage() {
                 className="flex items-center gap-2 text-foreground/50 font-medium"
               >
                 <BookOpen size={18} />
-                Rules
+                {t.rules}
               </button>
             </div>
           </motion.div>
