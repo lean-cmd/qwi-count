@@ -144,13 +144,18 @@ export default function ScoreInput() {
                 </motion.span>
               </div>
               <motion.button
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.03 }}
                 onClick={handleCommit}
-                className="h-14 px-6 rounded-2xl font-bold text-lg flex items-center gap-2 shadow-md shrink-0"
-                style={{ backgroundColor: currentColor, color: textOnColor }}
+                className="h-14 px-8 rounded-2xl font-extrabold text-lg flex items-center gap-1.5 shadow-lg shrink-0"
+                style={{
+                  background: `linear-gradient(135deg, ${currentColor}, ${currentColor}CC)`,
+                  color: textOnColor,
+                  boxShadow: `0 4px 14px ${currentColor}50`,
+                }}
               >
                 Next
-                <ChevronRight size={20} />
+                <ChevronRight size={22} strokeWidth={3} />
               </motion.button>
             </motion.div>
           ) : (

@@ -143,6 +143,8 @@ export const useGameStore = create<GameStore>()(
             playerTurnScores: [...player.turnScores],
             currentPlayerIndex: state.currentPlayerIndex,
             turnNumber: state.turnNumber,
+            committedScore: points,
+            committedBonusCount: bonuses,
           },
         };
 
@@ -189,6 +191,8 @@ export const useGameStore = create<GameStore>()(
             playerTurnScores: [...player.turnScores],
             currentPlayerIndex: state.currentPlayerIndex,
             turnNumber: state.turnNumber,
+            committedScore: 0,
+            committedBonusCount: 0,
           },
         };
 
@@ -230,8 +234,9 @@ export const useGameStore = create<GameStore>()(
           turnNumber: previousState.turnNumber,
           actions: state.actions.slice(0, -1),
           undoStack: state.undoStack.slice(0, -1),
-          pendingScore: 0,
-          pendingBonusCount: 0,
+          // Restore the committed score as pending so the user can correct it
+          pendingScore: previousState.committedScore,
+          pendingBonusCount: previousState.committedBonusCount,
         });
       },
 
@@ -240,11 +245,38 @@ export const useGameStore = create<GameStore>()(
         if (state.isFinished) return;
 
         const now = new Date().toISOString();
+
+        // If there are uncommitted pending points, commit them first
+        let currentPlayers = [...state.players];
+        let currentActions = [...state.actions];
+        if (state.pendingScore > 0) {
+          const player = currentPlayers[state.currentPlayerIndex];
+          const pendingAction: GameAction = {
+            type: state.pendingBonusCount > 0 ? 'PERFECT_LINE' : 'ADD_SCORE',
+            playerId: player.id,
+            points: state.pendingScore,
+            timestamp: now,
+          };
+          currentPlayers = currentPlayers.map((p) =>
+            p.id === player.id
+              ? {
+                  ...p,
+                  score: p.score + state.pendingScore,
+                  bonusCount: p.bonusCount + state.pendingBonusCount,
+                  turnScores: [...p.turnScores, state.pendingScore],
+                }
+              : p
+          );
+          currentActions = [...currentActions, pendingAction];
+        }
+
         const updates: Partial<GameStore> = {
           isFinished: true,
           finishedAt: now,
           pendingScore: 0,
           pendingBonusCount: 0,
+          players: currentPlayers,
+          actions: currentActions,
         };
 
         if (bonusPlayerId) {
@@ -255,8 +287,8 @@ export const useGameStore = create<GameStore>()(
             timestamp: now,
           };
           updates.endGameBonusPlayerId = bonusPlayerId;
-          updates.actions = [...state.actions, bonusAction];
-          updates.players = state.players.map((p) =>
+          updates.actions = [...currentActions, bonusAction];
+          updates.players = currentPlayers.map((p) =>
             p.id === bonusPlayerId ? { ...p, score: p.score + 6 } : p
           );
         }

@@ -31,7 +31,7 @@ function textForColor(hex: string): string {
 
 export default function GamePage() {
   const router = useRouter();
-  const { players, isFinished, undoStack, undo, skipTurn, endGame, id } = useGameStore();
+  const { players, isFinished, undoStack, undo, skipTurn, endGame, id, pendingScore, currentPlayerIndex } = useGameStore();
   const { playClick } = useGameSound();
   const [showEndConfirm, setShowEndConfirm] = useState(false);
 
@@ -115,6 +115,14 @@ export default function GamePage() {
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-xl font-bold text-center">End Game?</h3>
+              {pendingScore > 0 && (
+                <div className="bg-secondary/15 rounded-xl p-3 text-center text-sm font-medium">
+                  <span className="font-bold" style={{ color: players[currentPlayerIndex]?.color }}>
+                    {players[currentPlayerIndex]?.name}
+                  </span>
+                  {' '}has <span className="font-bold">+{pendingScore} pts</span> pending — these will be added automatically.
+                </div>
+              )}
               <p className="text-center opacity-60 text-sm">
                 Award +{END_GAME_BONUS} end-game bonus to a player, or end without bonus.
               </p>

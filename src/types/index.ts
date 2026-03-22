@@ -46,6 +46,9 @@ export interface UndoEntry {
     playerTurnScores: number[];
     currentPlayerIndex: number;
     turnNumber: number;
+    /** The committed score — restored as pending so the user can correct it */
+    committedScore: number;
+    committedBonusCount: number;
   };
 }
 
