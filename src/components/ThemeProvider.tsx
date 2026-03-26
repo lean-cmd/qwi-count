@@ -2,9 +2,10 @@
  * ThemeProvider.tsx
  *
  * Applies the user's theme preference (light/dark/system) to the <html> element.
- * Listens for system preference changes when set to "system".
+ * Also sets lang and dir attributes for i18n/RTL support.
  *
  * @author claude — 2026-03-20
+ * @modified claude — 2026-03-26 — add RTL + lang attribute support
  */
 
 'use client';
@@ -12,8 +13,11 @@
 import { useEffect } from 'react';
 import { useSettingsStore } from '@/stores/settingsStore';
 
+const RTL_LANGUAGES = new Set(['ar']);
+
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = useSettingsStore((s) => s.theme);
+  const language = useSettingsStore((s) => s.language);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -40,6 +44,12 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       return () => mq.removeEventListener('change', handler);
     }
   }, [theme]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.lang = language;
+    root.dir = RTL_LANGUAGES.has(language) ? 'rtl' : 'ltr';
+  }, [language]);
 
   return <>{children}</>;
 }
