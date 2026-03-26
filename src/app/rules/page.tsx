@@ -4,7 +4,7 @@
  * Concise tile game rules reference with scoring examples.
  *
  * @author claude — 2026-03-20
- * @modified claude — 2026-03-22 — i18n support
+ * @modified claude — 2026-03-26 — full i18n support for rule body text
  */
 
 'use client';
@@ -22,28 +22,28 @@ export default function RulesPage() {
         <section>
           <h2 className="text-xl font-bold text-foreground mb-2">{t.setup}</h2>
           <ul className="list-disc list-inside space-y-1">
-            <li>2–4 players, 108 tiles (6 shapes x 6 colors x 3 copies)</li>
-            <li>Each player draws 6 tiles</li>
-            <li>First player: whoever can play the most tiles</li>
+            <li>{t.ruleSetup1}</li>
+            <li>{t.ruleSetup2}</li>
+            <li>{t.ruleSetup3}</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-xl font-bold text-foreground mb-2">{t.onYourTurn}</h2>
           <ul className="list-disc list-inside space-y-1">
-            <li>Place 1+ tiles in a single line, OR trade tiles (score 0)</li>
-            <li>All tiles in a line must share exactly one attribute (same color OR same shape)</li>
-            <li>No duplicates in a line, max 6 tiles per line</li>
-            <li>Draw back to 6 tiles after placing</li>
+            <li>{t.ruleTurn1}</li>
+            <li>{t.ruleTurn2}</li>
+            <li>{t.ruleTurn3}</li>
+            <li>{t.ruleTurn4}</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-xl font-bold text-foreground mb-2">{t.scoring}</h2>
           <ul className="list-disc list-inside space-y-1">
-            <li>Each tile placed scores 1 point per tile in the line (including existing tiles)</li>
-            <li>If a tile touches two lines, both lines score</li>
-            <li>A single tile next to one existing tile = 2 points minimum</li>
+            <li>{t.ruleScore1}</li>
+            <li>{t.ruleScore2}</li>
+            <li>{t.ruleScore3}</li>
           </ul>
         </section>
 
@@ -51,36 +51,36 @@ export default function RulesPage() {
           <h2 className="text-xl font-bold text-foreground mb-2">{t.scoringExamples}</h2>
           <div className="space-y-3 text-sm bg-surface rounded-2xl p-4">
             <div>
-              <p className="font-bold">Place 1 tile extending a line of 3:</p>
-              <p>Score: 4 points (4 tiles in the line)</p>
+              <p className="font-bold">{t.ruleExample1Title}</p>
+              <p>{t.ruleExample1Score}</p>
             </div>
             <div>
-              <p className="font-bold">Place 2 tiles extending a line of 2:</p>
-              <p>Score: 4 points (4 tiles in the line)</p>
+              <p className="font-bold">{t.ruleExample2Title}</p>
+              <p>{t.ruleExample2Score}</p>
             </div>
             <div>
-              <p className="font-bold">Place 1 tile that touches two lines (3 and 4):</p>
-              <p>Score: 3 + 4 = 7 points</p>
+              <p className="font-bold">{t.ruleExample3Title}</p>
+              <p>{t.ruleExample3Score}</p>
             </div>
           </div>
         </section>
 
         <section>
           <h2 className="text-xl font-bold text-foreground mb-2">
-            <span className="text-primary">{t.perfectLine}</span> (+6 bonus)
+            <span className="text-primary">{t.perfectLine}</span> ({t.perfectLineBonus})
           </h2>
           <ul className="list-disc list-inside space-y-1">
-            <li>Complete a line of exactly 6 tiles = 6 points for the line + 6 bonus = <strong>12 total</strong></li>
-            <li>Complete two perpendicular lines of 6 = <strong>24 points</strong></li>
+            <li>{t.rulePerfect1}</li>
+            <li>{t.rulePerfect2}</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-xl font-bold text-foreground mb-2">{t.endGameRules}</h2>
           <ul className="list-disc list-inside space-y-1">
-            <li>Game ends when no more tiles can be drawn and a player empties their hand</li>
-            <li>That player gets <strong>+6 bonus points</strong></li>
-            <li>Highest score wins!</li>
+            <li>{t.ruleEnd1}</li>
+            <li>{t.ruleEnd2}</li>
+            <li>{t.ruleEnd3}</li>
           </ul>
         </section>
       </div>

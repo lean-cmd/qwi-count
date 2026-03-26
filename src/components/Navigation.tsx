@@ -20,7 +20,7 @@ export default function Navigation() {
 
   const NAV_ITEMS = [
     { href: '/', label: t.home, icon: Home },
-    { href: '/game', label: 'Game', icon: Gamepad2 },
+    { href: '/game', label: t.game, icon: Gamepad2 },
     { href: '/rules', label: t.rules, icon: BookOpen },
     { href: '/settings', label: t.settings, icon: Settings },
   ];
